@@ -300,7 +300,7 @@
         </div>
 
         <div class="controls">
-            <div class="site-title" id="siteTitle">Wordle</div>
+            <div class="site-title" id="siteTitle">Word Master</div>
             <div class="nav-controls">
                 <button onclick="previousSite()">⬅️ Previous</button>
                 <button onclick="nextSite()">Next ➡️</button>
@@ -316,7 +316,7 @@
 
         <div class="iframe-container">
             <iframe id="siteFrame"
-                    src="https://www.nytimes.com/games/wordle/index.html"
+                    src="https://octokatherine.github.io/word-master/"
                     sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     loading="eager"></iframe>
@@ -331,10 +331,10 @@
     <script>
         // Default sites list
         const sites = [
-            { name: 'Wordle', url: 'https://www.nytimes.com/games/wordle/index.html' },
-            { name: 'Connections', url: 'https://www.nytimes.com/games/connections' },
+            { name: 'Word Master', url: 'https://octokatherine.github.io/word-master/' },
             { name: 'Loldle', url: 'https://loldle.net/' },
-            { name: 'Contexto', url: 'https://contexto.me/en/' }
+            { name: 'Contexto', url: 'https://contexto.me/en/' },
+            { name: 'Worldle', url: 'https://worldle.teuteuf.fr/' }
         ];
 
         let currentSiteIndex = 0;
