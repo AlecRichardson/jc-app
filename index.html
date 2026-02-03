@@ -98,6 +98,89 @@
             display: block;
             margin-bottom: 15px;
         }
+        .link-card-wrapper {
+            position: relative;
+        }
+        .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .remove-btn:hover {
+            background: #b71c1c;
+            transform: scale(1.1);
+        }
+        .add-site-section {
+            background: rgba(255, 248, 240, 0.95);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            border: 2px solid #8b6f47;
+        }
+        .add-site-section h3 {
+            margin-top: 0;
+            color: #5d4a3a;
+            font-size: 1.3rem;
+        }
+        .add-site-form {
+            display: grid;
+            grid-template-columns: 1fr 80px 2fr auto;
+            gap: 10px;
+            align-items: end;
+        }
+        .add-site-form input {
+            padding: 10px;
+            border: 2px solid #8b6f47;
+            border-radius: 4px;
+            font-size: 16px;
+            background: #fffef9;
+            font-family: 'Georgia', serif;
+        }
+        .add-site-form input:focus {
+            outline: none;
+            border-color: #5d4a3a;
+            box-shadow: 0 0 0 3px rgba(139, 111, 71, 0.2);
+        }
+        .add-site-form button {
+            padding: 10px 20px;
+            background: #8b6f47;
+            color: #fffef9;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Georgia', serif;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .add-site-form button:hover {
+            background: #5d4a3a;
+            transform: translateY(-2px);
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label {
+            font-size: 12px;
+            color: #5d4a3a;
+            font-weight: bold;
+        }
         .notes-section {
             background: rgba(255, 248, 240, 0.95);
             padding: 20px;
@@ -167,6 +250,9 @@
             .links-grid {
                 grid-template-columns: 1fr;
             }
+            .add-site-form {
+                grid-template-columns: 1fr;
+            }
             .commit-info {
                 font-size: 10px;
                 padding: 6px 10px;
@@ -198,7 +284,26 @@
             <div class="tagline">Your cozy corner of the web</div>
         </div>
 
-        <div class="links-grid">
+        <div class="add-site-section">
+            <h3>➕ Add New Site</h3>
+            <form class="add-site-form" onsubmit="addSite(event)">
+                <div class="form-group">
+                    <label for="siteName">Name</label>
+                    <input type="text" id="siteName" placeholder="Site name" required>
+                </div>
+                <div class="form-group">
+                    <label for="siteEmoji">Emoji</label>
+                    <input type="text" id="siteEmoji" placeholder="🎮" maxlength="2" required>
+                </div>
+                <div class="form-group">
+                    <label for="siteUrl">URL</label>
+                    <input type="url" id="siteUrl" placeholder="https://example.com" required>
+                </div>
+                <button type="submit">Add Site</button>
+            </form>
+        </div>
+
+        <div class="links-grid" id="linksGrid">
             <a href="https://www.nytimes.com/games/wordle/index.html" target="_blank" class="link-card">
                 <span class="emoji">🔤</span>
                 <h3>Wordle</h3>
@@ -224,6 +329,65 @@
     </div>
 
     <script>
+        // Custom sites management
+        function getCustomSites() {
+            const stored = localStorage.getItem('customSites');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveCustomSites(sites) {
+            localStorage.setItem('customSites', JSON.stringify(sites));
+        }
+
+        function addSite(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('siteName').value;
+            const emoji = document.getElementById('siteEmoji').value;
+            const url = document.getElementById('siteUrl').value;
+
+            const customSites = getCustomSites();
+            customSites.push({ name, emoji, url, id: Date.now() });
+            saveCustomSites(customSites);
+
+            // Clear form
+            document.getElementById('siteName').value = '';
+            document.getElementById('siteEmoji').value = '';
+            document.getElementById('siteUrl').value = '';
+
+            renderCustomSites();
+        }
+
+        function removeSite(id) {
+            let customSites = getCustomSites();
+            customSites = customSites.filter(site => site.id !== id);
+            saveCustomSites(customSites);
+            renderCustomSites();
+        }
+
+        function renderCustomSites() {
+            const grid = document.getElementById('linksGrid');
+            const customSites = getCustomSites();
+
+            // Remove existing custom site cards
+            const existingCustom = grid.querySelectorAll('.link-card-wrapper');
+            existingCustom.forEach(el => el.remove());
+
+            // Add custom sites
+            customSites.forEach(site => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'link-card-wrapper';
+                wrapper.innerHTML = `
+                    <button class="remove-btn" onclick="removeSite(${site.id})" title="Remove site">×</button>
+                    <a href="${site.url}" target="_blank" class="link-card">
+                        <span class="emoji">${site.emoji}</span>
+                        <h3>${site.name}</h3>
+                    </a>
+                `;
+                grid.appendChild(wrapper);
+            });
+        }
+
         // Auto-resize textarea function
         function autoResizeTextarea(textarea) {
             textarea.style.height = 'auto';
@@ -242,6 +406,9 @@
 
         // Initial resize to fit existing content
         autoResizeTextarea(notesArea);
+
+        // Load custom sites on page load
+        renderCustomSites();
 
         // Fetch and display latest commit
         fetch('https://api.github.com/repos/AlecRichardson/jc-app/commits/main')
