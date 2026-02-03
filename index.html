@@ -184,6 +184,26 @@
             background: rgba(93, 74, 58, 0.95);
             transform: translateY(-2px);
         }
+        .commit-info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(139, 111, 71, 0.8);
+            color: #fffef9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-family: 'Courier New', monospace;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .commit-info a {
+            color: #fffef9;
+            text-decoration: none;
+        }
+        .commit-info a:hover {
+            text-decoration: underline;
+        }
         @media (max-width: 768px) {
             body {
                 padding: 10px 50px 10px 10px;
@@ -203,6 +223,10 @@
             }
             .header .decorations {
                 font-size: 1.5rem;
+            }
+            .commit-info {
+                font-size: 10px;
+                padding: 6px 10px;
             }
         }
         .nav-controls {
@@ -253,6 +277,12 @@
     <div class="floating-nav">
         <button onclick="previousSite()" title="Previous Site">⬅️</button>
         <button onclick="nextSite()" title="Next Site">➡️</button>
+    </div>
+
+    <div class="commit-info" id="commitInfo">
+        <a href="https://github.com/AlecRichardson/jc-app/commits/main" target="_blank" title="View commits">
+            Loading...
+        </a>
     </div>
 
     <div class="container">
@@ -371,6 +401,20 @@
 
         // Initial resize to fit existing content
         autoResizeTextarea(notesArea);
+
+        // Fetch and display latest commit
+        fetch('https://api.github.com/repos/AlecRichardson/jc-app/commits/main')
+            .then(response => response.json())
+            .then(data => {
+                const commitHash = data.sha.substring(0, 7);
+                const commitUrl = data.html_url;
+                const commitInfo = document.getElementById('commitInfo');
+                commitInfo.innerHTML = `<a href="${commitUrl}" target="_blank" title="View commit">${commitHash}</a>`;
+            })
+            .catch(error => {
+                console.error('Error fetching commit info:', error);
+                document.getElementById('commitInfo').innerHTML = '<span>dev</span>';
+            });
     </script>
 </body>
 </html>
